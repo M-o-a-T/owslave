@@ -25,6 +25,7 @@
 #include "console.h"
 #include "port.h"
 #include "pwm.h"
+#include "adc.h"
 #include "count.h"
 #include "timer.h"
 #include "dev_data.h"
