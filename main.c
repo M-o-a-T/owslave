@@ -30,6 +30,7 @@
 #include "moat.h"
 #include "jmp.h"
 #include "status.h"
+#include "unused.h"
 
 uint8_t mcusr __attribute__ ((section (".noinit")));
 #ifdef HAVE_IRQ_CATCHER
@@ -97,6 +98,7 @@ init_all(void)
 	onewire_init();
 	timer_init();
 	init_state();
+	init_unused();
 }
 
 inline void

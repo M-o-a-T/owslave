@@ -429,11 +429,37 @@ def main(cfg_name,*kk):
                     if temp_nam:
                         print("#define N_TEMP_DRIVER {}".format(len(temp_nam)), file=f)
 
+                    unused  = s.subtree('devices',k,'unused')
+                    if unused and len(unused) > 0:
+                        print("#define HAVE_UNUSED", file=f)
+
                     print("""\
 #define TC_MAX {}
 
 #endif /* device_{}_config_h */
     """.format(max_t+1,k,k), file=f)
+
+                with open("device/"+k+"/_unused.h","w") as f:
+                    print("""\
+/*
+ * This file is auto-generated. It contains the unused ports.
+ *
+ * Do not edit. Talk to '{}' instead.
+ */
+    """.format(k,cfg_name), file=f)
+                    unused  = s.subtree('devices',k,'unused')
+                    u = {}
+                    for v in unused:
+                        assert len(v)==2,v
+                        assert type(v)==str,v
+                        assert v[0] >= 'A' and v[0] <= 'Z', v[0]
+                        assert v[1] >= '0' and v[1] <= '7', v[1]
+                        port = (ord(v[0]) - ord('A'))
+                        pin  = (ord(v[1]) - ord('0'))
+                        u[port] = u.get(port,0) | (1 << pin)
+
+                    for v in u:
+                        print("UNUSED_PIOS({}, {})".format((v<<3), u[v]), file=f)
 
             elif mode == "type":
                 print(" ".join("{} {}".format(a,v) for a,v in s.keyval('devices',k,'types')))
@@ -471,6 +497,10 @@ def main(cfg_name,*kk):
                         files.append('crc.c')
                     for f in s.subtree('devices',k,'code'):
                         files.append(f+'.c')
+
+                unused  = s.subtree('devices',k,'unused')
+                if unused and len(unused) > 0:
+                    files.append("unused.c")
 
                 for f,v in s.keyval('devices',k,'types'):
                     if not v: continue
