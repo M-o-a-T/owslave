@@ -248,7 +248,7 @@ def main(cfg_name,*kk):
                     print("""\
 /*
  * This file is auto-generated. It contains the list of ports to count
- * transitions of, on the device "{}".
+ * transitions of, for the device "{}".
  *
  * Do not edit. Talk to '{}' instead.
  */
@@ -311,7 +311,7 @@ def main(cfg_name,*kk):
                 with open("device/"+k+"/_nums.h","w") as f:
                     print("""\
 /*
- * This file is auto-generated. It contains the number of devices.
+ * This file is auto-generated. It contains the number of devices, for the device "{}".
  *
  * Do not edit. Talk to '{}' instead.
  */
@@ -325,7 +325,7 @@ def main(cfg_name,*kk):
                 with open("device/"+k+"/_def.h","w") as f:
                     print("""\
 /*
- * This file is auto-generated. It contains the device codes.
+ * This file is auto-generated. It contains the device codes, for the device "{}".
  *
  * Do not edit. Talk to '{}' instead.
  */
@@ -337,7 +337,7 @@ def main(cfg_name,*kk):
                 with open("device/"+k+"/_status.h","w") as f:
                     print("""\
 /*
- * This file is auto-generated. It contains the status codes.
+ * This file is auto-generated. It contains the status codes for the device "{}".
  *
  * Do not edit. Talk to '{}' instead.
  */
@@ -442,7 +442,7 @@ def main(cfg_name,*kk):
                 with open("device/"+k+"/_unused.h","w") as f:
                     print("""\
 /*
- * This file is auto-generated. It contains the unused ports.
+ * This file is auto-generated. It contains the unused ports on the device "{}".
  *
  * Do not edit. Talk to '{}' instead.
  */
