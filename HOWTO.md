@@ -159,7 +159,7 @@ section to control what gets included (and, for some features, how many).
 
 ### port
 
-Your basic digital input/output pin. Your AVR device's data sheet names
+Your basic digital input/output pin. Your ATmega device's data sheet names
 them "B0" or "D7" or whatever. On the 1wire side, pins are numbered 1 to N.
 Use the `port` section to tell MoaT which pin numbers correspond to which
 hardware output.
@@ -212,7 +212,8 @@ want to toggle B1 every second, you'd extend the above example thus:
 
 and then "owwrite /F0.123456789ABC.DE/pwm.1 10,10"
 
-This is (almost) as accurate as the clock of your ATmega.
+This is (almost) as accurate as the clock of your ATmega, and a lot more
+efficient than sending a command every second.
 
 ### count
 
@@ -234,9 +235,72 @@ Let's add the counted input pin D5 to our example:
 
 You can now `owread /F0.123456789ABC.DE/count.1`.
 
+You can choose which transition to count (low/high, high/low, or both) and
+whether to raise an alarm when the counter increases.
+
+### temp
+
+Read a thermometer (or two). The only driver that's implemented right now
+is a test driver that returns slowly-varying dummy values.
+
+    types:
+      temp: 1
+    temp:
+      - dummy=1
+
+TODO: read "real" temperature
+
+### adc
+
+You can read voltages from the A/D converters. In addition to the ATmega's external ADC
+ports, yo can read the bandgap voltage (roughly 1.1V) and the temperature
+sensor (which is not very accurate).
+
+All voltages are returned as an integer: 65535 times the fraction of the
+supply voltage. You can use the bandgap voltage if you add a `-` to the config
+statement.
+
+As an example, with this statement
+
+    types:
+      adc: 5
+    adc:
+      - 0
+      - 2-
+      - R
+      - T
+      - G
+
+`owread /F0.123456789ABC.DE/adc.1` will measure ADC0 as a fraction of +5V (or whatever).
+Reading `adc.2` will measure ADC2 as a fraction of 1.1V, thus being somewhat
+more accurate if you need to read small voltages. `adc.3` will return something close to
+14419, i.e. 65535\*(Vdd/Vbg), assuming your supply voltage is +5V.
+`adc.4` will read the voltage of the ATmega's temperature sensor. `adc.5`,
+finally, returns the voltage of the ground pin, which should obviously be zero;
+usually it's offset by one or two bits, which gives you a rough estimate of
+the accuracy of the ADC converter.
+
+Note that accurate ADC readings depend on (a) the quality of the ADC's
+power supply, (b) on the ATmega doing as little as possible during
+conversion. (a) is your responsibility; check the data sheet. (b) is more
+of a problem.
+
+Note that MoaT continuously polls all configured ADC ports. Reading 1wire
+does not actually start the ADC, it just returns the latest value. I
+decided against adding an explicit "start conversion" command because the
+most common usage is not to poll the MoaT slave. Instead, you'd read once
+and then write trigger values which cause an alert when crossed. Thus, the
+MoaT slave needs to poll the ADC anyway.
+
 ### serial
 
 TODO: connect one of the console channels to the serial port.
 
-### 
+### fire
+
+TODO: implement the Gira Dual smoke detector's serial protocol on the slave.
+
+### Loader
+
+TODO: firmware update over 1wire.
 
