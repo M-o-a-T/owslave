@@ -53,15 +53,15 @@ This adds basic code to use the serial port.
 ### `have_uart_irq`
 
 Use this to have the UART be interrupt-based. If this is off, the code will
-use polling.
+use polling. Note that UART interrupts may disrupt 1wire communication.
 
 ### `have_uart_sync`
 
 If this is on, the UART will use neither interrupts nor polling; instead
 it'll simply wait until the ATmega's send buffer is empty.
 
-Use this for hard-to-find crashes; beware that about any serial output will
-disrupt real functions.
+Use this for hard-to-find crashes; however, any serial output will disrupt
+1wire communication.
 
 ### `have_timer`
 
@@ -89,13 +89,13 @@ If you need to debug the low-level 1wire code itself, set this. Should not be ne
 
 The debugger macros from `debug.h` will send their data to the UART.
 Only do this if you connect a serial terminal to your ATmega.
-Do not do this if you debug the UART.
+Do not use this when debugging UART itself.
 
 ### `console_debug`
 
 The debugger macros from `debug.h` will send their data to the 1wire
 console buffer.
-Careful when debugging 1wire itself.
+Do not use this when debugging 1wire itself.
 
 ### `console_write`
 
@@ -146,7 +146,7 @@ Add 1wire code for `SKIP_ROM` and `READ_ROM`. You probably do not need this.
 
 ### `onewire_io`
 
-Choose wich pin to connect your 1wire bus to. For now, only pins with
+Choose which pin to connect your 1wire bus to. For now, only pins with
 dedicated interrupts (INTx) can be used. On an ATmega168, these are pins
 D2 and D3.
 
@@ -166,11 +166,11 @@ hardware output.
 
 Pins can have one of four states:
 
-* One or High, i.e. tied to +5V (or whatever).
-* Zero or Low, i.e. tied to ground.
-* Pull-Up, i.e. tied to +5V (or whatever) via an internal resistor,
+* `^`: One or High, i.e. tied to +5V (or whatever voltage you use).
+* `_`: Zero or Low, i.e. tied to ground.
+* `+`: Pull-Up, i.e. tied to +5V (or whatever) via an internal resistor,
   so that an external input can still ground it ("wired-AND").
-* High impedance, i.e. sensing whether the input is 1 or 0 passively.
+* `~`: High impedance, i.e. sensing whether the input is 1 or 0 passively.
 
 Reading the pin will return whatever signal is physically present.
 Writing to the pin may or may not change its state. Typically, 
@@ -182,18 +182,19 @@ to switch between "pull-up is on" and "pull-down to zero". You can do that
 by adding a `/` to the port description. Alternately, if you have an
 external pull-up resistor, you can add `!`, which switches between "high
 impedance" and "pull-down to zero", instead. These modifiers also apply to
-the other two states, but that's usually not useful.
+the other two states (i.e. a port marked with `+!` will switch between Pull-Up
+and One), but that's usually not useful.
 
 Please do not bother this author with Arduino-based port numbers.
 
-Thus, if you want to control the output ports B0 and B1, both of which
-shall be low initially:
+Thus, if you want to write B0 (initially low) and read/write B1
+(with pull-up):
 
     types:
       port: 2
     port:
       1: B0_
-      2: B1_
+      2: B1+/
 
 ### pwm
 
@@ -205,13 +206,13 @@ want to toggle B1 every second, you'd extend the above example thus:
       pwm: 1
     port:
       1: B0_
-      2: B1_
+      2: B1+/
     pwm:
       1: 2
 
 and then "owwrite /F0.123456789ABC.DE/pwm.1 10,10"
 
-This is (amost) exactly as accurate as the clock of your ATmega.
+This is (almost) as accurate as the clock of your ATmega.
 
 ### count
 
@@ -226,10 +227,16 @@ Let's add the counted input pin D5 to our example:
       count: 1
     port:
       1: B0_
-      2: B1_
+      2: B1+/
       3: D5~
     count:
       1: 3
 
 You can now `owread /F0.123456789ABC.DE/count.1`.
+
+### serial
+
+TODO: connect one of the console channels to the serial port.
+
+### 
 
