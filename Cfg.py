@@ -60,7 +60,7 @@ class Cfg(object):
     iseq = 1
 
     def __init__(self, f):
-        with open(f) as fd:
+        with open(f,encoding='utf-8') as fd:
             self.data = yaml.load(fd)
         self.ipath = {}
         self.data['_idata_'] = {}
