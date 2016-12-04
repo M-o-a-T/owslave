@@ -46,6 +46,7 @@ void read_pwm(uint8_t chan, uint8_t *buf)
 		if (chan > N_PWM)
 			next_idle('p');
 		t = &pwms[chan-1];
+		t->flags &= ~PWM_IS_ALERT;
 		p = &ports[t->port-1];
 		tm=timer_remaining(&t->timer);
 
@@ -63,8 +64,8 @@ void read_pwm(uint8_t chan, uint8_t *buf)
 		for(i=0;i<N_PWM;i++,t++) {
 			uint16_t tm;
 			if(!(i&7)) {
-				p = &ports[t->port-1];
 				uint8_t j,v=0,m=1;
+				p = &ports[t->port-1];
 				for(j=0;j<8;j++) {
 					if (i+j >= N_PWM) break;
 					if (p->flags & PFLG_CURRENT)
@@ -74,6 +75,7 @@ void read_pwm(uint8_t chan, uint8_t *buf)
 				*buf++ = v;
 			}
 			tm=timer_remaining(&t->timer);
+			t->flags &= ~PWM_IS_ALERT;
 			*buf++ = tm>>8;
 			*buf++ = tm;
 		}
