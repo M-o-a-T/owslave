@@ -39,7 +39,7 @@ extern uint8_t _config_end;
  *  Struct sizes must match exactly.
  */
 
-inline uint8_t cfg_byte(cfg_addr_t addr) {
+uint8_t inline cfg_byte(cfg_addr_t addr) {
 #ifdef USE_EEPROM
     return eeprom_read_byte(EEPROM_POS+addr);
 #else
@@ -183,7 +183,7 @@ char _cfg_read(void *data, uint8_t size, ConfigID id) {
 }
 
 #ifdef USE_EEPROM
-inline cfg_addr_t cfg_addr_w(uint8_t size, ConfigID id) {
+static inline cfg_addr_t cfg_addr_w(uint8_t size, ConfigID id) {
 	cfg_addr_t off;
 	uint8_t sz;
 
