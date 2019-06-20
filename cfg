@@ -513,6 +513,7 @@ def main(cfg_name,*kk):
                 if ow == "moat" and not BI:
                     files.extend(moat_files(s,k))
 
+                files.sort()  # Ensure object order is the same every time
                 print(" ".join(files))
             else:
                 print("Unknown mode:",mode, file=sys.stderr)
