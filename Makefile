@@ -170,7 +170,7 @@ device/${DEV}/cfg: device/${DEV} ${CFG} cfg
 	@$(RUN_CFG) ${CFG} .type ${DEV}
 	@cp ${CFG} device/${DEV}/cfg
 device/${DEV}/image.hex: device/${DEV}/image.elf
-	$(OBJCOPY) -R .eeprom -O ihex $< $@
+	$(OBJCOPY) -j .data -j .text -O ihex $< $@
 device/${DEV}/image.lss: device/${DEV}/image.elf
 	$(OBJDUMP) -h -S $< > $@
 device/${DEV}/eprom.hex: device/${DEV}/image.elf
