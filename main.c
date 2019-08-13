@@ -101,7 +101,7 @@ init_all(void)
 	init_unused();
 }
 
-inline void
+static inline void
 poll_all(void)
 {
 #if defined(UART_DEBUG) && defined(N_CONSOLE)
