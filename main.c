@@ -52,9 +52,13 @@ void setup_watchdog(void)
 	wdt_reset();
 #ifdef HAVE_IRQ_CATCHER
 	// intense debugging
-	wdt_enable(0x05);
+	wdt_enable(WDTO_500MS);
 #else
-	wdt_enable(0x09);
+#ifdef WDTO_4S
+	wdt_enable(WDTO_4S);
+#else
+	wdt_enable(WDTO_2S);
+#endif
 #endif
 #else
 	wdt_disable();
